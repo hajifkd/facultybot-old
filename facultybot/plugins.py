@@ -18,6 +18,46 @@ def shlex_args(func):
         func(message, *args_utf8)
     return wrapper
 
+@respond_to(ur'help')
+def help(message):
+    message.reply(u''' Facultybot - IPMU名言集
+
+Facultybotは、IPMU周辺の人々の名言を記録するためのbotです。
+名言を記録するには、まず発言した人を登録しましょう。
+
+人を登録するには、add facultyコマンドを使います。
+
+例:
+@facultybot add faculty ほげふが
+
+この際、Unix shell同様のエスケープが効きます。スペースなどが入る場合
+有効に活用してください。以下のコマンドでもすべて同様です。
+
+例:
+@facultybot add faculty "Hoge Fuga"
+
+同じ人を別の名前で登録してもいいですが、あまり増やしすぎても発言を登録する際に混乱しそうですのでほどほどに。
+登録済みの人を表示するには、ls peopleします。
+人にはnicknameをつけることができます。ただし、現状表示される名前は一番最初に登録したものに限ります。
+
+例:
+@facultybot add nickname ほげふが hoge
+
+ls peopleでnicknameもすべて表示されます。わかりにくいものを登録するのはやめましょう。
+最後に、発言を登録するには、add speechコマンドです。
+
+例:
+@facultybot add speech hoge "Hello, IPMU!"
+
+IPMU botを活用して楽しいIPMU学生ライフを過ごしましょう!!  ''')
+
+@respond_to(ur'ls people')
+def ls_people(message):
+    sess = Session()
+    for n in sess.query(NickName).all():
+        message.reply(n.nickname)
+    sess.close()
+
 @respond_to(ur'add faculty (.+)')
 def add_faculty(message, name):
     sess = Session()
@@ -36,7 +76,7 @@ def add_faculty(message, name):
     sess.add(nick)
     sess.commit()
     sess.close()
-
+    
     message.reply(u'追加しました。')
 
 @respond_to(ur'add nickname (.+)')
