@@ -21,7 +21,7 @@ def shlex_args(func):
 @respond_to(ur'add faculty (.+)')
 def add_faculty(message, name):
     sess = Session()
-    name = name.decode('utf-8')
+    name = shlex.split(name)[0].decode('utf-8')
 
     if sess.query(NickName).filter_by(nickname=name).count():
         message.reply(u'その人はすでに存在しています')
