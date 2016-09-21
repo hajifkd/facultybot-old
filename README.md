@@ -1,2 +1,2 @@
-# taizanbot
-Taizan bot
+# facultybot
+faculty bot

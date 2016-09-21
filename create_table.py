@@ -1,3 +1,3 @@
-import taizanbot.models
+import facultybot.models
 
-taizanbot.models.create_table()
+facultybot.models.create_table()
