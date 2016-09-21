@@ -54,7 +54,7 @@ IPMU botを活用して楽しいIPMU学生ライフを過ごしましょう!!  '
 @respond_to(ur'ls people')
 def ls_people(message):
     sess = Session()
-    message.reply('\n'.join(n.nickname for n in sess.query(NickName))
+    message.reply('\n'.join(n.nickname for n in sess.query(NickName)))
     sess.close()
 
 @respond_to(ur'add faculty (.+)')
