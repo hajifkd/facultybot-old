@@ -1,7 +1,4 @@
-from slackbot.bot import Bot
-def main():
-    bot = Bot()
-    bot.run()
+from facultybot.plugins import main
 
 if __name__ == "__main__":
     main()

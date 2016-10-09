@@ -6,6 +6,48 @@ import random
 import shlex
 import functools
 
+from slackbot.bot import Bot
+from threading import Timer
+
+from datetime import datetime, timedelta
+
+
+def get_random_speech():
+    sess = Session()
+    msgs = sess.query(Speech).count()
+    if msgs == 0:
+        sess.close()
+        return None
+
+    rand = random.randrange(0, msgs)
+    row = sess.query(Speech)[rand]
+    speech = row.speech
+    name = row.faculty.nicknames[0].nickname
+    sess.close()
+    return u'\"%s\" - %s' % (speech, name)
+
+
+def set_timer(bot):
+    now = datetime.now()
+    target = datetime(*(now.timetuple()[:3] + (9,)))
+    if target < now:
+        delta = timedelta(days=1)
+        target += delta
+
+    second = int((target - now).total_seconds())
+    Timer(second, tweet, [bot]).start()
+
+
+def tweet(bot):
+    bot._client.send_message('#chat', u"本日の名言:%s" % get_random_speech())
+    set_timer(bot)
+
+
+def main():
+    bot = Bot()
+    set_timer(bot)
+    bot.run()
+
 def shlex_args(func):
     @functools.wraps(func)
     def wrapper(message, arg):
@@ -119,19 +161,10 @@ def check(message, nick, text):
     sess.close()
 
 
-
 @default_reply
 def talk(message):
-    sess = Session()
-    msgs = sess.query(Speech).count()
-    if msgs == 0:
+    m = get_random_speech()
+    if not m:
         message.reply(u'あなたに言うことはなにもありません')
-        sess.close()
-        return
-
-    rand = random.randrange(0, msgs)
-    row = sess.query(Speech)[rand]
-    speech = row.speech
-    name = row.faculty.nicknames[0].nickname
-    sess.close()
-    message.reply(u'\"%s\" - %s' % (speech, name))
+    else:
+        message.reply(m)
